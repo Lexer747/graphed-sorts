@@ -20,7 +20,7 @@ Public Class Form1
     Dim ComboBoxItem As String
 
     'Hardcoded file path cuz im lazy
-    Dim RealativePath As String = "C:\Users\Lexer\Documents\Visual Studio 2015\Projects\QuickSort Graphed\"
+    Dim RealativePath As String = "C:\Users\Lexer\Documents\Visual Studio 2015\Projects\graphed-sorts\debug_txt\"
 
     'All these subs are used as templates for threading purposes
     Delegate Sub ThreadString(ByVal str As String)
@@ -41,7 +41,7 @@ Public Class Form1
         'select case used to find the length of the array to be sorted
         Select Case ComboBoxItem
             Case "File"
-                SizeA = LengthOfFile("File.txt") - 1
+                SizeA = LengthOfFile("InputFile.txt") - 1
             Case Else
                 If Integer.TryParse(TextBox1.Text, SizeA) Then
                     SizeA = CInt(TextBox1.Text) - 1
@@ -95,7 +95,7 @@ Public Class Form1
             Case "File"
 
                 'gets an array from a file specified by file.txt
-                ReadTextFile(Array, "File.txt")
+                ReadTextFile(Array, "InputFile.txt")
             Case Else
                 For i = 0 To SizeA
                     Array(i) = rand.Next(minA, maxA + 1)
@@ -1721,8 +1721,8 @@ Public Class Form1
         BinaryInsertionSort(Array2, 0, length2)
 
         'save the arrays for debugging
-        savearray(Array1, length1, "Input.txt")
-        savearray(Array2, length2, "Output.txt")
+        savearray(Array1, length1, "InputArr.txt")
+        savearray(Array2, length2, "OutputArr.txt")
 
         'for all the index's check that each value is the same
         For i = 0 To length1
