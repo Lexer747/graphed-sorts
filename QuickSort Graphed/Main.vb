@@ -8,8 +8,18 @@ Public Class Main
 
     'initalization of global variables
     Inherits Form
+    Const MAX_ARRAY As Integer = 1000000
+    Const DEF_ARRAY As Integer = 99
     Dim CallCount, Trackbar, LargestFileValue, minA, maxA As Integer
-
+    Enum chartInstruction
+        ClearSeries
+        ClearArea
+        AdjustY
+        AddSeries
+        Update
+        RemoveSwapSeries
+        AddSwapSeries
+    End Enum
     'these are used as tracking variables accross all sorts
     Dim SizeA, ArrayAccesses, ComparesMade, StackCounter, OverflowsOccured As Double
 
@@ -41,15 +51,15 @@ Public Class Main
         'select case used to find the length of the array to be sorted
         Select Case ComboBoxItem
             Case "File"
-                SizeA = LengthOfFile("InputFile.txt") - 1
+                SizeA = LengthOfFile("InputFile.txt")
             Case Else
                 If Integer.TryParse(TextBox1.Text, SizeA) Then
                     SizeA = CInt(TextBox1.Text) - 1
-                    If SizeA > 10000000 Then
-                        SizeA = 10000000
+                    If SizeA > MAX_ARRAY Then
+                        SizeA = MAX_ARRAY
                     End If
                 Else
-                    SizeA = 99
+                    SizeA = DEF_ARRAY
                 End If
         End Select
         Dim Array(SizeA) As Integer
@@ -57,13 +67,10 @@ Public Class Main
         'sets up the coordinate axis of the graph so that the data Is all included
         'also gets the range of values from the text box
         GetRange()
-        ChartThreading(1)
-        ChartThreading(2)
-        ChartThreading(3)
-        ChartThreading(4)
-
-        'debug output
-        Label1Threading("Debugging output" & vbNewLine & "Creating an array of " & SizeA + 1 & " numbers...")
+        ChartThreading(chartInstruction.ClearSeries)
+        ChartThreading(chartInstruction.ClearArea)
+        ChartThreading(chartInstruction.AdjustY)
+        ChartThreading(chartInstruction.AddSeries)
 
         'select case used to find which type of array the user wishes to create
         ComboBoxThreading(2)
@@ -104,17 +111,13 @@ Public Class Main
 
         'attach the array to the graph
         BindArray(" Array", Array)
-        ChartThreading(5)
-
-        'debug output
-        Label1Threading(Label1.Text & vbNewLine & (" Created"))
 
         'save the array to a file for debugging
         savearray(Array, SizeA, "Unsorted.txt")
-        Label1Threading(Label1.Text & vbNewLine & (" Saved"))
 
         'add the swapping series to the graph which Is in red
-        ChartThreading(7)
+        ChartThreading(chartInstruction.AddSwapSeries)
+        ChartThreading(chartInstruction.Update)
 
         'display the big O notation for the sort
         ComboBoxThreading(1)
@@ -172,27 +175,24 @@ Public Class Main
         'stop the stopwatch as soon as it Is done to be more accurate
         stopwatch.Stop()
 
-        'check if the sort was succesful as some sorts are Not always implemented properly
+        'check if the sort was succesful as some sorts are Not always implemented properly (slow sort etc)
         'also debugging for New sorts
         If IsSorted(Array) = False Then
             MsgBox("failed To Sort")
             animateGraph = False
         End If
 
-        'debug output
-        Label1Threading(Label1.Text & vbNewLine & (" Sorted"))
-
         'display the time take to user
         Dim TimeTaken As Integer = stopwatch.ElapsedMilliseconds
         Label6Threading(FormatTime(TimeTaken))
 
         'remove the swapping series from the graph
-        ChartThreading(1)
-        ChartThreading(4)
-        ChartThreading(6)
+        ChartThreading(chartInstruction.ClearSeries)
+        ChartThreading(chartInstruction.AddSeries)
+        ChartThreading(chartInstruction.RemoveSwapSeries)
         chartpointorigin()
         BindArray(" Array", Array)
-        ChartThreading(5)
+        ChartThreading(chartInstruction.Update)
 
         'update the counters
         Label15Threading(ComparesMade)
@@ -202,7 +202,6 @@ Public Class Main
 
         'save the final array to a file for debugging
         savearray(Array, SizeA, "Sorted.txt")
-        Label1Threading(Label1.Text & vbNewLine & (" Saved"))
 
         'compare the unsorted array to the final array to check if all the values are the same
         'And no values were lost Or changed
@@ -1624,7 +1623,7 @@ Public Class Main
         End Using
 
         'return the length of the array
-        Return i
+        Return (i - 1)
     End Function
 
     Sub ReadTextFile(ByRef A() As Integer, ByVal FileName As String)
@@ -1770,7 +1769,7 @@ Public Class Main
     End Sub
 
     '---Threading Crap---'
-    Private Sub ChartThreading(ByVal Threadinstructioncode As Integer)
+    Private Sub ChartThreading(ByVal Threadinstructioncode As chartInstruction)
 
         'this shit is so stupid but whatever
 
@@ -1778,31 +1777,25 @@ Public Class Main
         'to make calls from any thread i want, hence calling ChartThreading(1) from another Thread will cause an invoke so that the same call Is made but on
         'the thread it was oringally created
         Select Case Threadinstructioncode
-            Case 1
-
-                '1 is the same as clearing the series
+            Case chartInstruction.ClearSeries
                 If Chart1.InvokeRequired Then
                     Dim d As New ThreadInt(AddressOf ChartThreading)
-                    Me.Invoke(d, 1)
+                    Me.Invoke(d, chartInstruction.ClearSeries)
                 Else
                     Chart1.Series.Clear()
                 End If
-            Case 2
-
-                '2 is the same as clearing the chart area
+            Case chartInstruction.ClearArea
                 If Chart1.InvokeRequired Then
                     Dim d As New ThreadInt(AddressOf ChartThreading)
-                    Me.Invoke(d, 2)
+                    Me.Invoke(d, chartInstruction.ClearArea)
                 Else
                     Chart1.ChartAreas.Clear()
                 End If
 
-            Case 3
-
-                '3 will change the Y axis of the of the graph to be based on the global variables
+            Case chartInstruction.AdjustY
                 If Chart1.InvokeRequired Then
                     Dim d As New ThreadInt(AddressOf ChartThreading)
-                    Me.Invoke(d, 3)
+                    Me.Invoke(d, chartInstruction.AdjustY)
                 Else
 
                     'calls the combobox value to the global variable
@@ -1825,39 +1818,37 @@ Public Class Main
                         End Select
                     End With
                 End If
-            Case 4
-
-                '4 will add the array series to the graph
+            Case chartInstruction.AddSeries
                 If Chart1.InvokeRequired Then
                     Dim d As New ThreadInt(AddressOf ChartThreading)
-                    Me.Invoke(d, 4)
+                    Me.Invoke(d, chartInstruction.AddSeries)
                 Else
                     Chart1.Series.Add(" Array")
                 End If
-            Case 5
-
-                '5 will update the graph
+            Case chartInstruction.Update
                 If Chart1.InvokeRequired Then
                     Dim d As New ThreadInt(AddressOf ChartThreading)
-                    Me.Invoke(d, 5)
+                    Me.Invoke(d, chartInstruction.Update)
                 Else
                     Chart1.Update()
                 End If
-            Case 6
+            Case chartInstruction.RemoveSwapSeries
 
                 '6 will remove the second series (1 index) from the legend
                 If Chart1.InvokeRequired Then
                     Dim d As New ThreadInt(AddressOf ChartThreading)
-                    Me.Invoke(d, 6)
+                    Me.Invoke(d, chartInstruction.RemoveSwapSeries)
                 Else
-                    Chart1.Series.Add(1).IsVisibleInLegend = False
+                    If Not Chart1.Series.IsUniqueName(1) Then
+                        Chart1.Series.Add(1).IsVisibleInLegend = False
+                    End If
                 End If
-            Case 7
+            Case chartInstruction.AddSwapSeries
 
-                '7 will add the swapping series and change the colour of it
-                If Chart1.InvokeRequired Then
+                    '7 will add the swapping series and change the colour of it
+                    If Chart1.InvokeRequired Then
                     Dim d As New ThreadInt(AddressOf ChartThreading)
-                    Me.Invoke(d, 7)
+                    Me.Invoke(d, chartInstruction.AddSwapSeries)
                 Else
                     Chart1.Series.Add("Swapping")
                     Chart1.Series("Swapping").Color = Color.Red
@@ -1865,22 +1856,10 @@ Public Class Main
         End Select
     End Sub
 
-    Private Sub Label1Threading(ByVal text As String)
-
-        'changes the text of label 1 to parameter passed from any thread
-        If Label1.InvokeRequired Then
-            Dim d As New ThreadString(AddressOf Label1Threading)
-            Me.Invoke(d, text)
-        Else
-            Label1.Text = text
-            Label1.Refresh()
-        End If
-    End Sub
-
-    Sub ComboBoxThreading(ByVal int As Integer)
+    Sub ComboBoxThreading(ByVal boxNumber As Integer)
 
         'sets the global variable for the drop downs to the value specified by the parameter From any thread
-        Select Case int
+        Select Case boxNumber
             Case 1
                 If ComboBox1.InvokeRequired Then
                     Dim d As New ThreadInt(AddressOf ComboBoxThreading)
@@ -1927,7 +1906,9 @@ Public Class Main
             Dim d As New Thread(AddressOf chartpointorigin)
             Me.Invoke(d)
         Else
-            Chart1.Series(1).Points.AddXY(0, 0)
+            If Not Chart1.Series.IsUniqueName(1) Then
+                Chart1.Series(1).Points.AddXY(0, 0)
+            End If
         End If
     End Sub
 
