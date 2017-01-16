@@ -1,7 +1,9 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Basic Express 2010
-Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "QuickSort Graphed", "QuickSort Graphed\QuickSort Graphed.vbproj", "{0EF98FE2-ECCC-475F-B8EC-0FFF3FE18E29}"
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "graphed-sorts", "QuickSort Graphed\graphed-sorts.vbproj", "{0EF98FE2-ECCC-475F-B8EC-0FFF3FE18E29}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

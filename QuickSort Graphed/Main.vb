@@ -4,7 +4,7 @@ Imports System.IO
 Imports System.Threading
 Imports System.Windows.Forms
 
-Public Class Form1
+Public Class Main
 
     'initalization of global variables
     Inherits Form
@@ -1582,14 +1582,14 @@ Public Class Form1
         Dim Path As String = RealativePath & FileName
 
         'if the file doesnt exist, create it
-        If My.Computer.FileSystem.FileExists(path) = False Then
-            Dim fs As System.IO.FileStream = File.Create(path)
+        If My.Computer.FileSystem.FileExists(Path) = False Then
+            Dim fs As System.IO.FileStream = File.Create(Path)
             fs.Close()
         End If
         LargestFileValue = 0
 
         'using vbs built in file readers
-        Using MyReader As New Microsoft.VisualBasic.FileIO.TextFieldParser(path)
+        Using MyReader As New Microsoft.VisualBasic.FileIO.TextFieldParser(Path)
 
             'specify how the data is read and the fields are seprated
             MyReader.TextFieldType = FileIO.FieldType.Delimited
@@ -1633,13 +1633,13 @@ Public Class Form1
         Dim Path As String = RealativePath & FileName
 
         'create the file if it doesnt exist
-        If My.Computer.FileSystem.FileExists(path) = False Then
-            Dim fs As System.IO.FileStream = File.Create(path)
+        If My.Computer.FileSystem.FileExists(Path) = False Then
+            Dim fs As System.IO.FileStream = File.Create(Path)
             fs.Close()
         End If
 
         'same process as length of file
-        Using MyReader As New Microsoft.VisualBasic.FileIO.TextFieldParser(path)
+        Using MyReader As New Microsoft.VisualBasic.FileIO.TextFieldParser(Path)
             MyReader.TextFieldType = FileIO.FieldType.Delimited
             MyReader.SetDelimiters(",")
             Dim CurrentRow() As String
