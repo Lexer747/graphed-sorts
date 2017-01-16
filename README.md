@@ -1,7 +1,7 @@
 # Some sorts Graphed
 
 Currently, a small program i wrote back in 2015 which implemented as many sorts as i knew of at the time and displayed each major step on a bar graph.
-Written useing visual studio so the code needs refactoring and cleaning but the program works. Also was my first real use of threading which is a laughbly bad
+Written using visual studio so the code needs refactoring and cleaning but the program works. Also was my first real use of threading which is a laughbly bad
 implementation of moving work onto another thread.
 
 ## Current Sorts:
