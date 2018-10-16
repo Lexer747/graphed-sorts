@@ -10,10 +10,11 @@ work with VB anymore but this is good to look back on :)
 
 ## Sample usages:
 
-Quick Sort:
-![](samples/quickSort.gif) 
+Quick Sort:  
+![](samples/quickSort.gif)   
 
-Insertion Sort:
+
+Insertion Sort:  
 ![](samples/insertionSort.gif)
 
 ## Current Sorts:
